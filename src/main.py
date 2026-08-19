@@ -26,6 +26,9 @@ def main():
     #step 3
     detect_urls(email)
 
+    #step 4
+    check_sender_characteristics(email)
+
 #Step 2: Detect suspicious keywords 
 def detect_keywords(email):
         #List of common phishing keywords
@@ -111,6 +114,18 @@ def analyse_url(url):
 
     print(f" Risk Score: {risk_score}")
     print(f" Risk Level: {risk_level}")
+
+#STEP 4: Check sender characteritics 
+def check_sender_characteristics(email):
+      #Extract sender email address using regex
+      sender_regex = r"[Ff]rom:.*?(\w+@\w+\.\w+)"
+
+      match = re.search(sender_regex, email)
+
+      if match:
+            sender_email = match.group(1)
+            print(f"Sender Email: {sender_email}")
+      
 
 if __name__ == "__main__":
         main()
