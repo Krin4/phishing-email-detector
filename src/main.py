@@ -1,9 +1,13 @@
+import re 
+import ipaddress
+
+
 def main():
     print("Phishing Email Detector")
     print("--------------------------")
     print("Paste the email content below: ")
 
-    #For multiline 
+    #For processing multiline email 
     lines = []
     while True:
         line = input()
@@ -16,9 +20,13 @@ def main():
     print("Email received:")
     print(email)
 
+    #step 2
     detect_keywords(email)
 
-#Step 2 detect suspicious keywords 
+    #step 3
+    detect_urls(email)
+
+#Step 2: Detect suspicious keywords 
 def detect_keywords(email):
         #List of common phishing keywords
         suspicious_keywords = ["urgent",
@@ -57,6 +65,52 @@ def detect_keywords(email):
                   print(keyword)
         else:
              print("No suspicious keyword detected")
+
+#Step 3: Detect suspicious links
+def detect_urls(email):
+
+       #Extract URLs using regex
+       url_pattern = r'(?:https://|http://)?(?:[a-zA-Z0-9]+\.)+(?:[a-zA-Z0-9]+)(?:/[\w.-]*)*'
+       urls = re.findall(url_pattern, email)
+
+       print("URLs found:")
+       for url in urls:
+            print(url)
+            analyse_url(url)
+
+def analyse_url(url):
+    risk_score = 0
+
+    #check if URL contains an IP adress
+    try:
+        #Check if the URL is valid
+        if "//" in url:
+            hostname = url.split("//")[1].split("/")[0]
+        else:
+            hostname = url.split("/")[0]
+
+        ipaddress.ip_address(hostname)
+        print(f"URL {url} is a valid IP address.")
+
+        risk_score += 3
+
+    except ValueError:
+        print(f"URL uses a domain name.")
+
+    #Check if URL uses HTTPS
+    if url.startswith("http://"):
+       risk_score += 2
+
+    #Risk score evaluation
+    if risk_score >= 5:
+        risk_level = "High"
+    elif risk_score >= 3:
+        risk_level = "Medium"
+    else:
+        risk_level = "Low"
+
+    print(f" Risk Score: {risk_score}")
+    print(f" Risk Level: {risk_level}")
 
 if __name__ == "__main__":
         main()
